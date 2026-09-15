@@ -1,7 +1,7 @@
 "use client";
 
 import { SORT_OPTIONS, type SortBy } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 
 interface TodoSortProps {
   value: SortBy;

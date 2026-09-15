@@ -8,7 +8,7 @@ import {
   type Category,
   type Priority,
 } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 import { Input } from "@/components/ui/input";
 
 interface TodoInputProps {
