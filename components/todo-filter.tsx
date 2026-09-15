@@ -1,7 +1,7 @@
 "use client";
 
 import { TODO_FILTERS, type TodoFilter } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 
 interface TodoFilterProps {
   value: TodoFilter;

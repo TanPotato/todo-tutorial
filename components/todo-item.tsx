@@ -8,7 +8,7 @@ import {
   PRIORITY_META,
   type Todo,
 } from "@/lib/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
