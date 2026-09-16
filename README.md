@@ -2,10 +2,21 @@
 
 [Claude Code Playbook](https://docs.claude-hunt.com) 강의의 실습용 저장소입니다. Next.js 와 shadcn/ui 로 시작하는 작은 Todo 앱을 단계별로 발전시키며 Claude Code 사용법을 익힙니다.
 
+브라우저 `localStorage` 에만 데이터를 저장하는 클라이언트 전용 앱이라, 별도의 데이터베이스나 환경 변수 설정 없이 `bun install` 과 `bun dev` 만으로 바로 실행할 수 있습니다.
+
 ## 관련 링크
 
 - 강의 본문: https://docs.claude-hunt.com
 - 수강생 결과물 공유: https://claude-hunt.com
+
+## 주요 기능
+
+- 할 일 추가 / 완료 토글 / 수정 / 삭제 (내용을 비우고 저장하면 삭제)
+- 우선순위(높음·보통·낮음), 마감일, 카테고리(업무·개인·쇼핑) 지정
+- 상태 필터(전체·진행중·완료)와 카테고리 필터
+- 제목 검색(대소문자 무시)과 정렬(생성일순·이름순·마감일순)
+- 다크 모드 토글 (`d` 키)
+- `localStorage` 자동 저장 및 복원 (구버전 데이터 호환 보정 포함)
 
 ## 기술 스택
 
@@ -14,9 +25,12 @@
 - Tailwind CSS v4
 - shadcn/ui (radix-maia 스타일, taupe 베이스)
 - TypeScript / ESLint / Prettier
+- Vitest + Testing Library
 - 패키지 매니저: bun 1.3.6
 
 ## 시작하기
+
+사전 준비: [bun](https://bun.sh) 1.3.6 이상이 설치되어 있어야 합니다.
 
 ```bash
 bun install
@@ -30,10 +44,21 @@ bun dev
 ```bash
 bun dev            # 개발 서버 실행
 bun run build      # 프로덕션 빌드
-bun run start      # 빌드 결과 실행
+bun run start      # 빌드 결과 실행 (bun run build 이후)
 bun run lint       # ESLint
 bun run typecheck  # tsc --noEmit
 bun run format     # Prettier 포맷팅
+bun run test       # Vitest 1회 실행 (bun test 는 bun 내장 러너라 동작하지 않음)
+bun run test:watch # Vitest watch 모드
+```
+
+## 프로젝트 구조
+
+```text
+app/         App Router 진입점(layout, page, 전역 스타일)
+components/  Todo UI 컴포넌트와 테스트, shadcn/ui 컴포넌트(components/ui)
+hooks/       use-todos 등 클라이언트 상태 훅
+lib/         타입 정의(types.ts)와 정렬·검색 유틸(todo-utils.ts)
 ```
 
 ## 챕터별 시작 브랜치
