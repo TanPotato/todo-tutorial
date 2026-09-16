@@ -167,3 +167,168 @@ describe("useTodos 손상 데이터 보호", () => {
     });
   });
 });
+
+describe("useTodos editTodo", () => {
+  it("공백만으로 편집하면 해당 항목이 삭제된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "   ");
+    });
+
+    expect(result.current.todos).toHaveLength(0);
+  });
+
+  it("앞뒤 공백을 trim하여 저장한다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.editTodo(id, "  수정된 텍스트  ");
+    });
+
+    expect(result.current.todos[0].text).toBe("수정된 텍스트");
+  });
+
+  it("존재하지 않는 id로 편집하면 목록이 변경되지 않는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const before = result.current.todos;
+
+    act(() => {
+      result.current.editTodo("존재하지-않는-id", "새로운 텍스트");
+    });
+
+    expect(result.current.todos).toEqual(before);
+  });
+});
+
+describe("useTodos toggleTodo", () => {
+  it("지정한 항목만 completed를 반전시키고 나머지는 그대로 유지한다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("첫번째");
+      result.current.addTodo("두번째");
+      result.current.addTodo("세번째");
+    });
+    const targetId = result.current.todos[1].id;
+
+    act(() => {
+      result.current.toggleTodo(targetId);
+    });
+
+    expect(
+      result.current.todos.find((todo) => todo.id === targetId)?.completed
+    ).toBe(true);
+    expect(
+      result.current.todos.filter((todo) => todo.id !== targetId)
+    ).toEqual(
+      expect.arrayContaining([expect.objectContaining({ completed: false })])
+    );
+    expect(
+      result.current.todos.filter((todo) => todo.id !== targetId).length
+    ).toBe(2);
+  });
+
+  it("같은 id로 두 번 연속 토글하면 원래 상태로 돌아온다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.toggleTodo(id);
+    });
+    act(() => {
+      result.current.toggleTodo(id);
+    });
+
+    expect(result.current.todos[0].completed).toBe(false);
+  });
+
+  it("존재하지 않는 id로 토글하면 목록이 변경되지 않는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const before = result.current.todos;
+
+    act(() => {
+      result.current.toggleTodo("존재하지-않는-id");
+    });
+
+    expect(result.current.todos).toEqual(before);
+  });
+});
+
+describe("useTodos deleteTodo", () => {
+  it("지정한 id만 삭제하고 나머지는 순서를 유지한 채 남는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("첫번째");
+      result.current.addTodo("두번째");
+      result.current.addTodo("세번째");
+    });
+    const remaining = [
+      result.current.todos[0].id,
+      result.current.todos[2].id,
+    ];
+    const targetId = result.current.todos[1].id;
+
+    act(() => {
+      result.current.deleteTodo(targetId);
+    });
+
+    expect(result.current.todos.map((todo) => todo.id)).toEqual(remaining);
+  });
+
+  it("삭제 결과가 localStorage에도 반영된다", async () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const id = result.current.todos[0].id;
+
+    act(() => {
+      result.current.deleteTodo(id);
+    });
+
+    await waitFor(() => {
+      const stored = JSON.parse(localStorage.getItem("todos") ?? "[]");
+      expect(stored).toEqual([]);
+    });
+  });
+
+  it("존재하지 않는 id로 삭제해도 목록이 변경되지 않는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("장보기");
+    });
+    const before = result.current.todos;
+
+    act(() => {
+      result.current.deleteTodo("존재하지-않는-id");
+    });
+
+    expect(result.current.todos).toEqual(before);
+  });
+});
