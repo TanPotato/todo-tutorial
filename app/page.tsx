@@ -13,8 +13,9 @@ export default function Page() {
       <div className="flex w-full max-w-md min-w-0 flex-col gap-6">
         <div>
           {title}
-          <p className="font-mono text-xs text-muted-foreground">
-            (Press <kbd>d</kbd> to toggle dark mode)
+          <p className="text-xs text-muted-foreground">
+            (<kbd className="font-mono">d</kbd> 키를 누르면 다크 모드를 켜고 끌
+            수 있어요)
           </p>
         </div>
         <TodoList />
