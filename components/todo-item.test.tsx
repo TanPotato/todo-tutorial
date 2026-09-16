@@ -191,3 +191,51 @@ describe("TodoItem 편집 - IME 조합 중 Enter", () => {
     expect(onEdit).toHaveBeenCalledExactlyOnceWith("1", "수정완료");
   });
 });
+
+describe("TodoItem 편집 - 취소와 블러 커밋", () => {
+  it("Escape를 누르면 편집을 취소하고 원래 텍스트로 되돌아가며 onEdit을 호출하지 않는다", async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(
+      <TodoItem
+        todo={makeTodo()}
+        onToggle={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={onEdit}
+      />
+    );
+
+    await user.dblClick(screen.getByText("테스트 할 일"));
+    const input = screen.getByRole("textbox", { name: "할 일 편집" });
+    fireEvent.change(input, { target: { value: "취소될 텍스트" } });
+
+    fireEvent.keyDown(input, { key: "Escape" });
+
+    expect(onEdit).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("textbox", { name: "할 일 편집" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("테스트 할 일")).toBeInTheDocument();
+  });
+
+  it("입력창에서 blur가 발생하면 변경된 텍스트로 onEdit을 호출한다", async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(
+      <TodoItem
+        todo={makeTodo()}
+        onToggle={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={onEdit}
+      />
+    );
+
+    await user.dblClick(screen.getByText("테스트 할 일"));
+    const input = screen.getByRole("textbox", { name: "할 일 편집" });
+    fireEvent.change(input, { target: { value: "블러로 커밋" } });
+
+    fireEvent.blur(input);
+
+    expect(onEdit).toHaveBeenCalledExactlyOnceWith("1", "블러로 커밋");
+  });
+});

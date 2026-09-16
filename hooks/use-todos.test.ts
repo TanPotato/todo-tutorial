@@ -168,6 +168,40 @@ describe("useTodos 손상 데이터 보호", () => {
   });
 });
 
+describe("useTodos addTodo 가드", () => {
+  it("빈 문자열로 호출하면 추가되지 않는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("");
+    });
+
+    expect(result.current.todos).toHaveLength(0);
+  });
+
+  it("공백만 있는 문자열로 호출하면 추가되지 않는다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("   ");
+    });
+
+    expect(result.current.todos).toHaveLength(0);
+  });
+
+  it("가드에 막힌 뒤 정상 텍스트로 호출하면 정상적으로 추가된다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("   ");
+      result.current.addTodo("정상 텍스트");
+    });
+
+    expect(result.current.todos).toHaveLength(1);
+    expect(result.current.todos[0].text).toBe("정상 텍스트");
+  });
+});
+
 describe("useTodos editTodo", () => {
   it("공백만으로 편집하면 해당 항목이 삭제된다", () => {
     const { result } = renderHook(() => useTodos());
